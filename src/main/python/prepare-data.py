@@ -60,5 +60,5 @@ for root, dirs, files in os.walk("d:\\test-data"):
 		connection.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml', open(filepath+".xml", 'rb'), headers)
 		
 		response = connection.getresponse()
-		print(response.read().decode())
+		print(str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 		
