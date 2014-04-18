@@ -9,10 +9,11 @@ for root, dirs, files in os.walk("d:\\prep"):
 		# build path to file on filesystem
 		filepath = os.path.join(root, file)
 		
-		# open file to read 
+		# open file to read (to filehandle)
 		fh = open(filepath, 'r')
+		# break lines into large string[] array 
 		lines = fh.readlines()
-		# rewind
+		# rewind to get the entire file for prepending XML
 		fh.seek(0)
 		original_file = fh.read()
 				
