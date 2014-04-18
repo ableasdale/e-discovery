@@ -1,6 +1,4 @@
 import os
-#import urllib.request
-#import httplib2
 import http.client
 from base64 import b64encode
 
