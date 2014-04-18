@@ -1,5 +1,6 @@
 import os
 import http.client
+import time, datetime
 from base64 import b64encode
 
 # This is a python script to add XML content to the 'text/plain' enron email files
@@ -28,8 +29,11 @@ for root, dirs, files in os.walk("d:\\test-data"):
 		sb.append('<Metadata>')
 		sb.append('<FilePath>'+filepath+'</FilePath>')
 		for line in lines:
-			if line.startswith("Date: "):
-				sb.append('<Date>'+line[6:].strip()+'</Date>')
+			if line.startswith("Date: "):			
+				tdate = line[6:(line.index("(") - 1)]
+				sb.append('<DateTime>'+
+				datetime.datetime.fromtimestamp(time.mktime(time.strptime(tdate, "%a, %d %b %Y %H:%M:%S %z"))).isoformat()
+				+'</DateTime>')
 			if line.startswith("From: "):
 				sb.append('<From>'+line[6:].strip()+'</From>')
 			if line.startswith("To: "):
@@ -49,6 +53,7 @@ for root, dirs, files in os.walk("d:\\test-data"):
 			fhw.write("\n".join(sb))
 					
 		# put data
+		print('processing: ' + filepath+".xml")
 		connection = http.client.HTTPConnection("localhost", 8003)
 		userAndPass = b64encode(b"q:q").decode("ascii")
 		headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
@@ -56,3 +61,4 @@ for root, dirs, files in os.walk("d:\\test-data"):
 		
 		response = connection.getresponse()
 		print(response.read().decode())
+		
