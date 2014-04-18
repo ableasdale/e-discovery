@@ -43,7 +43,7 @@ for root, dirs, files in os.walk("d:\\prep"):
 		
 		# prepend file with xml opening elements (<Item><FullText>)
 		with open(filepath, "w") as fhw:
-			fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA['+original_file) 
+			fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
 		
 		
 		# open file in append mode and add the metadata
@@ -51,7 +51,10 @@ for root, dirs, files in os.walk("d:\\prep"):
 			fhw.write("\n".join(sb))
 					
 		# put data
-		h = http.client.HTTPConnection("localhost", 8003)
+		connection = http.client.HTTPConnection("localhost", 8003)
 		userAndPass = b64encode(b"q:q").decode("ascii")
 		headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
-		h.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml',open(filepath, 'rb'), headers)
+		connection.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml',open(filepath, 'rb'), headers)
+		
+		response = connection.getresponse()
+		print(response.read().decode())
