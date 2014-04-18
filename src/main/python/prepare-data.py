@@ -1,5 +1,7 @@
 import os
 
+# This is a python script to add XML content to the 'text/plain' enron email files
+
 # traverse the directory from root with os.walk(".")	
 # note - relative to cmd if you do the above
 for root, dirs, files in os.walk("d:\\prep"):
