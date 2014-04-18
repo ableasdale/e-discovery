@@ -1,4 +1,8 @@
 import os
+#import urllib.request
+#import httplib2
+import http.client
+from base64 import b64encode
 
 # This is a python script to add XML content to the 'text/plain' enron email files
 
@@ -39,9 +43,15 @@ for root, dirs, files in os.walk("d:\\prep"):
 		
 		# prepend file with xml opening elements (<Item><FullText>)
 		with open(filepath, "w") as fhw:
-			fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
+			fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA['+original_file) 
 		
 		
 		# open file in append mode and add the metadata
 		with open(filepath, "a") as fhw:
 			fhw.write("\n".join(sb))
+					
+		# put data
+		h = http.client.HTTPConnection("localhost", 8003)
+		userAndPass = b64encode(b"q:q").decode("ascii")
+		headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
+		h.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml',open(filepath, 'rb'), headers)
