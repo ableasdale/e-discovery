@@ -22,7 +22,7 @@ for root, dirs, files in os.walk("d:\\prep"):
 		# create metadata XML block
 		# init stringbuffer for XML
 		sb = []
-		sb.append('</FullText>')		
+		sb.append(']]></FullText>')		
 		sb.append('<Metadata>')
 		sb.append('<FilePath>'+filepath+'</FilePath>')
 		for line in lines:
@@ -39,7 +39,7 @@ for root, dirs, files in os.walk("d:\\prep"):
 		
 		# prepend file with xml opening elements (<Item><FullText>)
 		with open(filepath, "w") as fhw:
-			fhw.write('<Item><FullText>' + original_file) 
+			fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
 		
 		
 		# open file in append mode and add the metadata
