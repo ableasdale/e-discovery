@@ -6,7 +6,7 @@ from base64 import b64encode
 
 # traverse the directory from root with os.walk(".")	
 # note - relative to cmd if you do the above
-for root, dirs, files in os.walk("d:\\prep"):
+for root, dirs, files in os.walk("d:\\test-data"):
 	# print the file and path with :: print (item) 
 	for file in files:
 	
@@ -40,19 +40,19 @@ for root, dirs, files in os.walk("d:\\prep"):
 		fh.close()
 		
 		# prepend file with xml opening elements (<Item><FullText>)
-		with open(filepath, "w") as fhw:
+		with open(filepath+".xml", "w") as fhw:
 			fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
 		
 		
 		# open file in append mode and add the metadata
-		with open(filepath, "a") as fhw:
+		with open(filepath+".xml", "a") as fhw:
 			fhw.write("\n".join(sb))
 					
 		# put data
 		connection = http.client.HTTPConnection("localhost", 8003)
 		userAndPass = b64encode(b"q:q").decode("ascii")
 		headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
-		connection.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml',open(filepath, 'rb'), headers)
+		connection.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml', open(filepath+".xml", 'rb'), headers)
 		
 		response = connection.getresponse()
 		print(response.read().decode())
