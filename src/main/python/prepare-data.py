@@ -58,11 +58,12 @@ def process_file(filepath):
 
 # traverse the directory from root with os.walk(".")	
 # note - relative to cmd if you do the above
-for root, dirs, files in os.walk("d:\\test-data\\allen-p\\deleted_items"):
+for root, dirs, files in os.walk("d:\\test-data"):
 	# print the file and path with :: print (item) 
 	for file in files:
 	
 		# build path to file on filesystem
 		t = Thread(target=process_file, args=(os.path.join(root, file),))
 		t.start()
+		t.join()
 		
