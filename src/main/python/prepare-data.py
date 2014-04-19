@@ -6,7 +6,7 @@ from base64 import b64encode
 
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
 
-ORIGINAL_DATA_DIR = "E:\\enron_corpus\\process"
+ORIGINAL_DATA_DIR = "E:\\enron_corpus\\original"
 
 
 def process_file(filepath):
@@ -26,7 +26,7 @@ def process_file(filepath):
 	sb.append(']]></FullText>')		
 	sb.append('<Metadata>')
 	sb.append('<FilePath>'+filepath+'</FilePath>')
-	for line in lines:
+	for line in lines[0:10]:		
 		if line.startswith("Date: "):			
 			tdate = line[6:(line.index("(") - 1)]
 			sb.append('<DateTime>'+
@@ -52,6 +52,9 @@ def process_file(filepath):
 
 	# put data
 	http_put_file(xmldoc)
+	
+	#delete XML file
+	os.remove(xmldoc)
 		
 
 def http_put_file(filename):
