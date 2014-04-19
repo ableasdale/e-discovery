@@ -6,7 +6,8 @@ from base64 import b64encode
 
 # This is a python script to add XML content to the 'text/plain' enron email files
 
-def process_file(filepath):	
+def process_file(filepath):
+	print('processing: ' + filepath+".xml")
 	# open file to read (to filehandle)
 	fh = open(filepath, 'r')
 	# break lines into large string[] array 
@@ -44,17 +45,20 @@ def process_file(filepath):
 	# open file in append mode and add the metadata
 	with open(filepath+".xml", "a") as fhw:
 		fhw.write("\n".join(sb))
-				
+
 	# put data
-	print('processing: ' + filepath+".xml")
+	http_put_file(filepath+'.xml')
+		
+
+def http_put_file(filename):
 	connection = http.client.HTTPConnection("localhost", 8003)
 	userAndPass = b64encode(b"q:q").decode("ascii")
 	headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
-	connection.request('PUT', '/v1/documents?uri='+filepath.replace("\\", "/")+'.xml', open(filepath+".xml", 'rb'), headers)
-	
+	connection.request('PUT', '/v1/documents?uri='+filename.replace("\\", "/"), open(filename, 'rb'), headers)
 	response = connection.getresponse()
 	print(str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 
+	
 # initialise a Thread Pool (64 worker threads) for concurrent operations
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=64)
 
