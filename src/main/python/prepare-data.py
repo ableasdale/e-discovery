@@ -1,7 +1,7 @@
 import os
 import http.client
 import time, datetime
-from threading import Thread
+import concurrent.futures
 from base64 import b64encode
 
 # This is a python script to add XML content to the 'text/plain' enron email files
@@ -55,15 +55,13 @@ def process_file(filepath):
 	response = connection.getresponse()
 	print(str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 
+# initialise a Thread Pool (64 worker threads) for concurrent operations
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=64)
 
-# traverse the directory from root with os.walk(".")	
-# note - relative to cmd if you do the above
+# traverse the directory from a given root with os.walk(".")	
 for root, dirs, files in os.walk("d:\\test-data"):
 	# print the file and path with :: print (item) 
 	for file in files:
-	
-		# build path to file on filesystem
-		t = Thread(target=process_file, args=(os.path.join(root, file),))
-		t.start()
-		t.join()
+                # task a single thread with the processing for that file
+                executor.submit(process_file, os.path.join(root, file))
 		
