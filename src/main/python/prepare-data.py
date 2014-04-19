@@ -4,10 +4,11 @@ import time, datetime
 import concurrent.futures
 from base64 import b64encode
 
-# This is a python script to add XML content to the 'text/plain' enron email files
+# This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
 
 def process_file(filepath):
-	print('processing: ' + filepath+".xml")
+	xmldoc = filepath + '.xml'
+	print('processing: ' + xmldoc)
 	# open file to read (to filehandle)
 	fh = open(filepath, 'r')
 	# break lines into large string[] array 
@@ -38,16 +39,16 @@ def process_file(filepath):
 	fh.close()
 	
 	# prepend file with xml opening elements (<Item><FullText>)
-	with open(filepath+".xml", "w") as fhw:
+	with open(xmldoc, "w") as fhw:
 		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
 	
 	
 	# open file in append mode and add the metadata
-	with open(filepath+".xml", "a") as fhw:
+	with open(xmldoc, "a") as fhw:
 		fhw.write("\n".join(sb))
 
 	# put data
-	http_put_file(filepath+'.xml')
+	http_put_file(xmldoc)
 		
 
 def http_put_file(filename):
@@ -68,4 +69,3 @@ for root, dirs, files in os.walk("d:\\test-data"):
 	for file in files:
                 # task a single thread with the processing for that file
                 executor.submit(process_file, os.path.join(root, file))
-		
