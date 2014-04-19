@@ -6,6 +6,9 @@ from base64 import b64encode
 
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
 
+ORIGINAL_DATA_DIR = "E:\\enron_corpus\\process"
+
+
 def process_file(filepath):
 	xmldoc = filepath + '.xml'
 	print('processing: ' + xmldoc)
@@ -60,11 +63,11 @@ def http_put_file(filename):
 	print(str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 
 	
-# initialise a Thread Pool (64 worker threads) for concurrent operations
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=64)
+# initialise a Thread Pool (128 worker threads) for concurrent operations
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=128)
 
 # traverse the directory from a given root with os.walk(".")	
-for root, dirs, files in os.walk("d:\\test-data"):
+for root, dirs, files in os.walk(ORIGINAL_DATA_DIR):
 	# print the file and path with :: print (item) 
 	for file in files:
                 # task a single thread with the processing for that file
