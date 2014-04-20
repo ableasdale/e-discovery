@@ -7,8 +7,7 @@ from base64 import b64encode
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
 # c:\Python34\python.exe d:\e-discovery\src\main\python\prepare-data.py > report.out
 
-# ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
-ORIGINAL_DATA_DIR = "E:\\enron_corpus\\tmp"
+ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
 REST_SERVER_PORT = 8003
 HOSTNAME = "localhost"
 ADMIN_USER = "q"
