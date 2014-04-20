@@ -4,7 +4,7 @@ xquery version "1.0-ml";
 : setup.xqy
 : Sets up necessary infrastructure for the application to be built
 :
-: Note: You MUST run this against the App-Services content source in order to correctly 
+: Note: You MUST run this against the App-Services Content Source in order to correctly 
 : set up the ReST Application Server
 :
 : <ul>
@@ -44,7 +44,7 @@ declare function local:create-range-indexes() {
     admin:save-configuration($CONFIG)
 };
 
-(: 3. create ReST server:
+(: 3. create ReST server 
 rest-model:create-restful-server("enronY", "test-rest", 8005, "Default") :)
 
 (: 4. set authentication to basic so the python script can connect :)
