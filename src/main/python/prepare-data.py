@@ -7,6 +7,8 @@ from base64 import b64encode
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
 
 ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
+REST_SERVER_PORT = 8003
+HOSTNAME = "localhost"
 ADMIN_USER = "q"
 ADMIN_PASSWORD = "q"
 CREDENTIALS = bytes((ADMIN_USER+':'+ADMIN_PASSWORD), encoding='utf-8') 
@@ -45,6 +47,7 @@ def process_file(filepath):
 	# prepend file with xml opening elements (<Item><FullText>)
 	with open(xmldoc, "w") as fhw:
 		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
+		fhw.close()
 	
 	# open file in append mode and add the metadata
 	with open(xmldoc, "a") as fhw:
@@ -53,23 +56,25 @@ def process_file(filepath):
 	
 	# put data
 	http_put_file(xmldoc)
-	print("should have put: " + xmldoc)
 	
-	#delete XML file
-	print("about to delete " + xmldoc)
+	#delete XML file - not os.unlink(xmldoc) should also work
 	try:
 		os.remove(xmldoc)
 	except OSError as e: 
 		print ("Failed with:", e.strerror)
-		print ("Error code:", e.code) 
-	# os.unlink(xmldoc)
-		
+		print ("Error code:", e.code) 		
 
 def http_put_file(filename):
-	connection = http.client.HTTPConnection("localhost", 8003)
+	connection = http.client.HTTPConnection(HOSTNAME, REST_SERVER_PORT)
 	userAndPass = b64encode(CREDENTIALS).decode("ascii")
-	headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
-	connection.request('PUT', '/v1/documents?uri='+filename.replace("\\", "/"), open(filename, 'rb'), headers)	
+	headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }	
+	f = open(filename, 'rb')
+	try:
+		connection.request('PUT', '/v1/documents?uri='+filename.replace("\\", "/"), f, headers)	
+	finally:
+		f.close()
+	
+	
 	response = connection.getresponse()	
 	if response.status != 204 and response.status != 201:
 		print("EXCEPTION: " + filename + " | " + str(response.status) + " | " + response.reason + " | "  + response.read().decode())
