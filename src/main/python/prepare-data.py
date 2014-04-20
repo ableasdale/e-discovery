@@ -5,7 +5,7 @@ import concurrent.futures
 from base64 import b64encode
 
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
-# c:\Python34\python.exe e-discovery\src\main\python\prepare-data.py
+# c:\Python34\python.exe e-discovery\src\main\python\prepare-data.py > report.out
 
 ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
 REST_SERVER_PORT = 8003
@@ -88,8 +88,8 @@ def http_put_file(filename):
 	if response.status != 204 and response.status != 201:
 		print("EXCEPTION: " + filename + " | " + str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 	
-# initialise a Thread Pool (128 worker threads) for concurrent operations
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=128)
+# initialise a Thread Pool (64 worker threads) for concurrent operations
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=64)
 
 # traverse the directory from a given root with os.walk(".")	
 for root, dirs, files in os.walk(ORIGINAL_DATA_DIR):

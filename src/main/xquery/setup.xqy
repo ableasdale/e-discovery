@@ -51,8 +51,10 @@ rest-model:create-restful-server("enronY", "test-rest", 8005, "Default") :)
 declare function local:configure-rest-server() {
     let $config := admin:get-configuration()
     let $groupid := admin:group-get-id($config, "Default")
-    let $config := admin:appserver-set-authentication($config, 
-         admin:appserver-get-id($config, $groupid, $APPSERVER-NAME), "basic")
+    let $appsvrid := admin:appserver-get-id($config, $groupid, $APPSERVER-NAME)
+    let $config := admin:appserver-set-authentication($config, $appsvrid, "basic")
+    let $config := admin:appserver-set-keep-alive-timeout($config, $appsvrid, 0)
+    let $config := admin:appserver-set-backlog($config, $appsvrid, 512)
     return
     admin:save-configuration($config)    
 };
