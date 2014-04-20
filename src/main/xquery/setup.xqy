@@ -20,6 +20,8 @@ import module namespace rest-model="http://marklogic.com/appservices/infostudio/
 declare variable $FOREST_MOUNTPOINT as xs:string := "E:\"; 
 declare variable $CONFIG := admin:get-configuration();
 declare variable $DATABASE-NAME as xs:string := "enronY";
+declare variable $APPSERVER-NAME as xs:string := "test-rest";
+declare variable $REST-SERVER-PORT := 8005;
 
 (: 1. create db 
 info:database-create($DATABASE-NAME, 1, "Default", $FOREST_MOUNTPOINT, "Security", "Schemas", "Triggers") :)
@@ -39,14 +41,12 @@ declare function local:create-range-indexes() {
     admin:save-configuration($CONFIG)
 };
 
-(: 3. 
-
-
-rest-model:create-restful-server("enronY", "test-rest", 8005, "Default")
-:)
+(: 3. create ReST server:
+rest-model:create-restful-server("enronY", "test-rest", 8005, "Default") :)
 
 (: Module Main Section :)
 (
     info:database-create($DATABASE-NAME, 1, "Default", $FOREST_MOUNTPOINT, "Security", "Schemas", "Triggers"),
-    local:create-range-indexes()
+    local:create-range-indexes(),
+    rest-model:create-restful-server($DATABASE-NAME, $APPSERVER-NAME, $REST-SERVER-PORT, "Default")
 )
