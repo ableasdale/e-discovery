@@ -2,7 +2,10 @@ xquery version "1.0-ml";
 
 (:~
 : setup.xqy
-: Sets up necessary infrastructure for the application to be built 
+: Sets up necessary infrastructure for the application to be built
+:
+: Note: You MUST run this against the App-Services content source in order to correctly 
+: set up the ReST Application Server
 :
 : <ul>
 : <li> Database and Forest</li>
@@ -15,13 +18,13 @@ xquery version "1.0-ml";
 
 import module namespace admin = "http://marklogic.com/xdmp/admin" at "/MarkLogic/admin.xqy";
 import module namespace info = "http://marklogic.com/appservices/infostudio"  at "/MarkLogic/appservices/infostudio/info.xqy";
-import module namespace rest-model="http://marklogic.com/appservices/infostudio/models/restful" at "/MarkLogic/appservices/infostudio/models/rest-model.xqy";
+import module namespace rest-model="http://marklogic.com/appservices/infostudio/models/restful" at "/infostudio/models/rest-model.xqy";
 
 declare variable $FOREST_MOUNTPOINT as xs:string := "E:\"; 
 declare variable $CONFIG := admin:get-configuration();
-declare variable $DATABASE-NAME as xs:string := "enronY";
-declare variable $APPSERVER-NAME as xs:string := "test-rest";
-declare variable $REST-SERVER-PORT := 8005;
+declare variable $DATABASE-NAME as xs:string := "enron";
+declare variable $APPSERVER-NAME as xs:string := "enron-http-rest";
+declare variable $REST-SERVER-PORT := 8003;
 
 (: 1. create db 
 info:database-create($DATABASE-NAME, 1, "Default", $FOREST_MOUNTPOINT, "Security", "Schemas", "Triggers") :)
@@ -43,6 +46,8 @@ declare function local:create-range-indexes() {
 
 (: 3. create ReST server:
 rest-model:create-restful-server("enronY", "test-rest", 8005, "Default") :)
+
+(: TODO _ set authentication to basic so the python script can connect :)
 
 (: Module Main Section :)
 (
