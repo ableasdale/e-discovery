@@ -5,9 +5,10 @@ import concurrent.futures
 from base64 import b64encode
 
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
-# c:\Python34\python.exe e-discovery\src\main\python\prepare-data.py > report.out
+# c:\Python34\python.exe d:\e-discovery\src\main\python\prepare-data.py > report.out
 
-ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
+# ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
+ORIGINAL_DATA_DIR = "E:\\enron_corpus\\tmp"
 REST_SERVER_PORT = 8003
 HOSTNAME = "localhost"
 ADMIN_USER = "q"
@@ -54,12 +55,12 @@ def process_file(filepath):
 	
 	# prepend file with xml opening elements (<Item><FullText>)
 	with open(xmldoc, "w") as fhw:
-		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
+		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) # .encode('utf_8') 
 		fhw.close()
 	
 	# open file in append mode and add the metadata
 	with open(xmldoc, "a") as fhw:
-		fhw.write("\n".join(sb))
+		fhw.write("\n".join(sb))  # .encode('utf_8')
 		fhw.close()
 	
 	# put data
@@ -88,8 +89,8 @@ def http_put_file(filename):
 	if response.status != 204 and response.status != 201:
 		print("EXCEPTION: " + filename + " | " + str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 	
-# initialise a Thread Pool (64 worker threads) for concurrent operations
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=64)
+# initialise a Thread Pool (32 worker threads) for concurrent operations
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=32)
 
 # traverse the directory from a given root with os.walk(".")	
 for root, dirs, files in os.walk(ORIGINAL_DATA_DIR):
