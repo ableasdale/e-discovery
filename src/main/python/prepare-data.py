@@ -23,8 +23,8 @@ def sanitise_text_for_xml(stringbuilder, elementname, item):
 
 def process_file(filepath):
 	xmldoc = filepath + '.xml'
-	# open file to read (to filehandle)
-	fh = open(filepath, 'r')
+	# open file to read (to filehandle) - force the file to open as UTF-8 so it will save correctly in MarkLogic
+	fh = open(filepath, mode='r', encoding='utf-8', errors='ignore')
 	# break lines into large string[] array 
 	lines = fh.readlines()
 	# rewind to get the entire file for prepending XML
@@ -55,12 +55,12 @@ def process_file(filepath):
 	
 	# prepend file with xml opening elements (<Item><FullText>)
 	with open(xmldoc, "w") as fhw:
-		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) # .encode('utf_8') 
+		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file)
 		fhw.close()
 	
 	# open file in append mode and add the metadata
 	with open(xmldoc, "a") as fhw:
-		fhw.write("\n".join(sb))  # .encode('utf_8')
+		fhw.write("\n".join(sb))
 		fhw.close()
 	
 	# put data
