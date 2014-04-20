@@ -15,6 +15,12 @@ ADMIN_USER = "q"
 ADMIN_PASSWORD = "q"
 CREDENTIALS = bytes((ADMIN_USER+':'+ADMIN_PASSWORD), encoding='utf-8') 
 
+def sanitise_text_for_xml(stringbuilder, elementname, item):
+	item = item.replace('<', '&lt;')
+	item = item.replace('>', '&gt;')
+	item = item.replace('&', '&amp;')
+	stringbuilder.append('<'+elementname+'>'+item[(len(elementname) + 2):].strip()+'</'+elementname+'>')
+
 def process_file(filepath):
 	xmldoc = filepath + '.xml'
 	# open file to read (to filehandle)
@@ -38,11 +44,12 @@ def process_file(filepath):
 			datetime.datetime.fromtimestamp(time.mktime(time.strptime(tdate, "%a, %d %b %Y %H:%M:%S %z"))).isoformat()
 			+'</DateTime>')
 		if line.startswith("From: "):
-			sb.append('<From>'+line[6:].strip()+'</From>')
+			sanitise_text_for_xml(sb, 'From', line)
 		if line.startswith("To: "):
-			sb.append('<To>'+line[4:].strip()+'</To>')
+			sanitise_text_for_xml(sb, 'To', line)
 		if line.startswith("Subject: "):
-			sb.append('<Subject>'+line[9:].strip()+'</Subject>')
+			sanitise_text_for_xml(sb, 'Subject', line)
+			
 	sb.append('</Metadata></Item>')
 	fh.close()
 	
@@ -64,7 +71,7 @@ def process_file(filepath):
 		os.remove(xmldoc)
 	except OSError as e: 
 		print ("Failed with:", e.strerror)
-		print ("Error code:", e.code) 		
+		print ("Error code:", e.code) 	
 
 def http_put_file(filename):
 	connection = http.client.HTTPConnection(HOSTNAME, REST_SERVER_PORT)
