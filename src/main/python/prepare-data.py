@@ -57,7 +57,7 @@ def process_file(filepath):
 	# put data
 	http_put_file(xmldoc)
 	
-	#delete XML file - not os.unlink(xmldoc) should also work
+	#delete XML file - note that os.unlink(xmldoc) should also work
 	try:
 		os.remove(xmldoc)
 	except OSError as e: 
@@ -71,10 +71,11 @@ def http_put_file(filename):
 	f = open(filename, 'rb')
 	try:
 		connection.request('PUT', '/v1/documents?uri='+filename.replace("\\", "/"), f, headers)	
+	except OSError as e: 
+		print ("Failed with:", e.strerror)
+		print ("Error code:", e.code)
 	finally:
 		f.close()
-	
-	
 	response = connection.getresponse()	
 	if response.status != 204 and response.status != 201:
 		print("EXCEPTION: " + filename + " | " + str(response.status) + " | " + response.reason + " | "  + response.read().decode())
