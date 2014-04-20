@@ -47,11 +47,21 @@ declare function local:create-range-indexes() {
 (: 3. create ReST server:
 rest-model:create-restful-server("enronY", "test-rest", 8005, "Default") :)
 
-(: TODO _ set authentication to basic so the python script can connect :)
+(: 4. set authentication to basic so the python script can connect :)
+declare function local:configure-rest-server() {
+    let $config := admin:get-configuration()
+    let $groupid := admin:group-get-id($config, "Default")
+    let $config := admin:appserver-set-authentication($config, 
+         admin:appserver-get-id($config, $groupid, $APPSERVER-NAME), "basic")
+    return
+    admin:save-configuration($config)    
+};
+
 
 (: Module Main Section :)
 (
     info:database-create($DATABASE-NAME, 1, "Default", $FOREST_MOUNTPOINT, "Security", "Schemas", "Triggers"),
     local:create-range-indexes(),
-    rest-model:create-restful-server($DATABASE-NAME, $APPSERVER-NAME, $REST-SERVER-PORT, "Default")
+    rest-model:create-restful-server($DATABASE-NAME, $APPSERVER-NAME, $REST-SERVER-PORT, "Default"),
+    local:configure-rest-server()
 )
