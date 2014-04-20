@@ -15,6 +15,7 @@ xquery version "1.0-ml";
 
 import module namespace admin = "http://marklogic.com/xdmp/admin" at "/MarkLogic/admin.xqy";
 import module namespace info = "http://marklogic.com/appservices/infostudio"  at "/MarkLogic/appservices/infostudio/info.xqy";
+import module namespace rest-model="http://marklogic.com/appservices/infostudio/models/restful" at "/MarkLogic/appservices/infostudio/models/rest-model.xqy";
 
 declare variable $FOREST_MOUNTPOINT as xs:string := "E:\"; 
 declare variable $CONFIG := admin:get-configuration();
@@ -37,6 +38,12 @@ declare function local:create-range-indexes() {
     return
     admin:save-configuration($CONFIG)
 };
+
+(: 3. 
+
+
+rest-model:create-restful-server("enronY", "test-rest", 8005, "Default")
+:)
 
 (: Module Main Section :)
 (
