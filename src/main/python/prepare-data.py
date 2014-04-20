@@ -6,12 +6,13 @@ from base64 import b64encode
 
 # This will add XML content to the 'text/plain' enron email files and send them over to MarkLogic via an HTTP 'PUT' request
 
-ORIGINAL_DATA_DIR = "E:\\enron_corpus\\original"
-
+ORIGINAL_DATA_DIR = "E:\\enron_corpus\\enron_mail_20110402"
+ADMIN_USER = "q"
+ADMIN_PASSWORD = "q"
+CREDENTIALS = bytes((ADMIN_USER+':'+ADMIN_PASSWORD), encoding='utf-8') 
 
 def process_file(filepath):
 	xmldoc = filepath + '.xml'
-	print('processing: ' + xmldoc)
 	# open file to read (to filehandle)
 	fh = open(filepath, 'r')
 	# break lines into large string[] array 
@@ -45,26 +46,33 @@ def process_file(filepath):
 	with open(xmldoc, "w") as fhw:
 		fhw.write('<?xml version="1.0" encoding="UTF-8"?><Item><FullText><![CDATA[' + original_file) 
 	
-	
 	# open file in append mode and add the metadata
 	with open(xmldoc, "a") as fhw:
 		fhw.write("\n".join(sb))
-
+		fhw.close()
+	
 	# put data
 	http_put_file(xmldoc)
+	print("should have put: " + xmldoc)
 	
 	#delete XML file
-	os.remove(xmldoc)
+	print("about to delete " + xmldoc)
+	try:
+		os.remove(xmldoc)
+	except OSError as e: 
+		print ("Failed with:", e.strerror)
+		print ("Error code:", e.code) 
+	# os.unlink(xmldoc)
 		
 
 def http_put_file(filename):
 	connection = http.client.HTTPConnection("localhost", 8003)
-	userAndPass = b64encode(b"q:q").decode("ascii")
+	userAndPass = b64encode(CREDENTIALS).decode("ascii")
 	headers = { 'Authorization' : 'Basic %s' %  userAndPass, 'Content-type' : 'application/xml' }
-	connection.request('PUT', '/v1/documents?uri='+filename.replace("\\", "/"), open(filename, 'rb'), headers)
-	response = connection.getresponse()
-	print(str(response.status) + " | " + response.reason + " | "  + response.read().decode())
-
+	connection.request('PUT', '/v1/documents?uri='+filename.replace("\\", "/"), open(filename, 'rb'), headers)	
+	response = connection.getresponse()	
+	if response.status != 204 and response.status != 201:
+		print("EXCEPTION: " + filename + " | " + str(response.status) + " | " + response.reason + " | "  + response.read().decode())
 	
 # initialise a Thread Pool (128 worker threads) for concurrent operations
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=128)
